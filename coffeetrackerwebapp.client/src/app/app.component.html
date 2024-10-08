@@ -16,7 +16,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let coffeeRecord of coffeeRecords">
-        <td>{{ coffeeRecord.date }}</td>
+        <td>{{ coffeeRecord.date | customDate }}</td>
         <td>{{ coffeeRecord.description }}</td>
         <td>{{ coffeeRecord.ounces }}</td>
         <td>{{ coffeeRecord.notes }}</td>

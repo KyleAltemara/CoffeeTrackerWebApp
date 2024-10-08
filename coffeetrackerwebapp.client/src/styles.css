@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles for dark mode */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: #bb86fc;
+}
+
+  a:hover {
+    color: #3700b3;
+  }
+
+/* Add any other global styles you need here */
