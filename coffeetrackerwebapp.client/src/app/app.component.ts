@@ -1,38 +1,35 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
-export interface CoffeeRecord {
-  id: number;
-  description: string;
-  date: string;
-  ounces: number;
-  notes: string;
-  rating: number;
-}
+import { environment } from '../../environment.js';
+import { CoffeeRecord } from './CoffeeRecord.js';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
+
 export class AppComponent implements OnInit {
   public coffeeRecords: CoffeeRecord[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.getRecordss();
+    this.getRecords();
   }
 
-  getRecordss() {
-    this.http.get<CoffeeRecord[]>('https://localhost:7273/api/Record').subscribe(
-      (result) => {
-        this.coffeeRecords = result;
-      },
-      (error) => {
+  getRecords() {
+    this.http.get<CoffeeRecord[]>(environment.apiUrl + environment.getRecords).pipe(
+      catchError((error) => {
         console.error(error);
-      }
-    );
+        return of([]);
+      })
+    ).subscribe((result) => {
+      this.coffeeRecords = result;
+    });
   }
 
   title = 'coffeetrackerwebapp.client';

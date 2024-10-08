@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
-import { CoffeeRecord } from './app.component';
+import { CoffeeRecord } from './CoffeeRecord';
 
 describe('AppComponent', () => {
   let component: AppComponent;
