@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 
-interface WeatherForecast {
+export interface CoffeeRecord {
+  id: number;
+  description: string;
   date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
+  ounces: number;
+  notes: string;
+  rating: number;
 }
 
 @Component({
@@ -14,18 +16,18 @@ interface WeatherForecast {
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  public forecasts: WeatherForecast[] = [];
+  public coffeeRecords: CoffeeRecord[] = [];
 
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    //this.getForecasts();
+    this.getRecordss();
   }
 
-  getForecasts() {
-    this.http.get<WeatherForecast[]>('/weatherforecast').subscribe(
+  getRecordss() {
+    this.http.get<CoffeeRecord[]>('https://localhost:7273/api/Record').subscribe(
       (result) => {
-        this.forecasts = result;
+        this.coffeeRecords = result;
       },
       (error) => {
         console.error(error);

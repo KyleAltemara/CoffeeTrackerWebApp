@@ -1,6 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { AppComponent } from './app.component';
+import { CoffeeRecord } from './app.component';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -29,17 +31,18 @@ describe('AppComponent', () => {
   });
 
   it('should retrieve weather forecasts from the server', () => {
-    const mockForecasts = [
-      { date: '2021-10-01', temperatureC: 20, temperatureF: 68, summary: 'Mild' },
-      { date: '2021-10-02', temperatureC: 25, temperatureF: 77, summary: 'Warm' }
+    const mockRecords = [
+      { id: 1, description: 'test1', date: '2024-01-01', ounces: 8, notes: 'test1', rating: 5 },
+      { id: 2, description: 'test2', date: '2024-01-02', ounces: 16, notes: 'test2', rating: 5 },
+      { id: 3, description: 'test3', date: '2024-01-03', ounces: 8, notes: 'test3', rating: 5 }
     ];
 
     component.ngOnInit();
 
-    const req = httpMock.expectOne('/weatherforecast');
+    const req = httpMock.expectOne('/api/Records');
     expect(req.request.method).toEqual('GET');
-    req.flush(mockForecasts);
+    req.flush(mockRecords);
 
-    expect(component.forecasts).toEqual(mockForecasts);
+    expect(component.coffeeRecords).toEqual(mockRecords);
   });
 });

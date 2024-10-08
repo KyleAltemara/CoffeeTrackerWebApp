@@ -13,11 +13,18 @@ public class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("CoffeeTrackerWebAppContext") ?? throw new InvalidOperationException("Connection string 'CoffeeTrackerWebAppContext' not found.")));
 
         // Add services to the container.
-
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        // Add CORS policy
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                builder => builder.WithOrigins("https://localhost:4200")
+                                  .AllowAnyHeader()
+                                  .AllowAnyMethod());
+        });
 
         var app = builder.Build();
 
@@ -32,6 +39,9 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        // Use CORS policy
+        app.UseCors("AllowSpecificOrigin");
 
         app.UseAuthorization();
 
