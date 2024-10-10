@@ -1,45 +1,51 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { AppComponent } from './app.component';
+import { CoffeeRecord } from './CoffeeRecord';
+import { environment } from '../../environment';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
-//describe('AppComponent', () => {
-//  let component: AppComponent;
-//  let fixture: ComponentFixture<AppComponent>;
-//  let httpMock: HttpTestingController;
+describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  let httpMock: HttpTestingController;
 
-//  beforeEach(async () => {
-//    await TestBed.configureTestingModule({
-//      declarations: [AppComponent],
-//      imports: [HttpClientTestingModule]
-//    }).compileComponents();
-//  });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+    declarations: [AppComponent],
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+}).compileComponents();
+  });
 
-//  beforeEach(() => {
-//    fixture = TestBed.createComponent(AppComponent);
-//    component = fixture.componentInstance;
-//    httpMock = TestBed.inject(HttpTestingController);
-//  });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+    httpMock = TestBed.inject(HttpTestingController);
+  });
 
-//  afterEach(() => {
-//    httpMock.verify();
-//  });
+  afterEach(() => {
+    httpMock.verify();
+  });
 
-//  it('should create the app', () => {
-//    expect(component).toBeTruthy();
-//  });
+  it('should create the app', () => {
+    expect(component).toBeTruthy();
+  });
 
-//  it('should retrieve weather forecasts from the server', () => {
-//    const mockForecasts = [
-//      { date: '2021-10-01', temperatureC: 20, temperatureF: 68, summary: 'Mild' },
-//      { date: '2021-10-02', temperatureC: 25, temperatureF: 77, summary: 'Warm' }
-//    ];
+  it('should retrieve coffee records from the server', () => {
+    const mockRecords: CoffeeRecord[] = [
+      { id: 1, description: 'test1', date: '2024-01-01', ounces: 8, notes: 'test1', rating: 5 },
+      { id: 2, description: 'test2', date: '2024-01-02', ounces: 16, notes: 'test2', rating: 4 },
+      { id: 3, description: 'test3', date: '2024-01-03', ounces: 8, notes: 'test3', rating: 1 }
+    ];
 
-//    component.ngOnInit();
+    component.ngOnInit();
 
-//    const req = httpMock.expectOne('/weatherforecast');
-//    expect(req.request.method).toEqual('GET');
-//    req.flush(mockForecasts);
+    const req = httpMock.expectOne(environment.apiUrl);
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockRecords);
 
-//    expect(component.forecasts).toEqual(mockForecasts);
-//  });
-//});
+    expect(component.coffeeRecords).toEqual(mockRecords);
+  });
+});
