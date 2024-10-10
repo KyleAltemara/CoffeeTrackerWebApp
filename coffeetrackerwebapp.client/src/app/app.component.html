@@ -22,6 +22,7 @@
       <th>Ounces</th>
       <th>Notes</th>
       <th>Rating</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -31,6 +32,8 @@
       <td>{{ coffeeRecord.ounces }}</td>
       <td>{{ coffeeRecord.notes }}</td>
       <td>{{ coffeeRecord.rating }}</td>
+      <td>
+        <button (click)="deleteRecord(coffeeRecord)">Delete</button>
     </tr>
   </tbody>
 </table>

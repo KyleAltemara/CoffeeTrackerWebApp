@@ -85,4 +85,15 @@ export class AppComponent implements OnInit {
     this.notes = defaultNotes;
     this.rating = 0;
   }
+
+  deleteRecord(coffeeRecord: CoffeeRecord) {
+    this.http.delete(`${environment.apiUrl}/${coffeeRecord.id}`).pipe(
+      catchError((error) => {
+        console.error(error);
+        return of({});
+      })
+    ).subscribe(() => {
+      this.getRecords();
+    });
+   }
 }
