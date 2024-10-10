@@ -15,8 +15,9 @@ const defaultNotes = 'Any notes?';
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
 
+  title = 'coffeetrackerwebapp.client';
   public coffeeRecords: CoffeeRecord[] = [];
 
   // Define properties for form inputs
@@ -26,7 +27,12 @@ export class AppComponent implements OnInit{
   notes: string = 'Any notes?';
   rating: number = 0;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Ensure HttpClient is injected correctly
+    if (!http) {
+      throw new Error('HttpClient not provided');
+    }
+  }
 
   ngOnInit() {
     this.getRecords();
