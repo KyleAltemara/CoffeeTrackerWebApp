@@ -1,5 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7273/api/',
-  getRecords: 'Record',
+  apiUrl: 'https://localhost:7273/api/Record'
 };
