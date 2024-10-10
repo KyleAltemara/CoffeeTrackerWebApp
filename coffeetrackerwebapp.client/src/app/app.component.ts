@@ -6,20 +6,22 @@ import { of } from 'rxjs';
 import { environment } from '../../environment.js';
 import { CoffeeRecord } from './CoffeeRecord.js';
 
+const defaultDescription = 'What coffee did you have?';
+const defaultNotes = 'Any notes?';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit{
 
-  title = 'coffeetrackerwebapp.client';
   public coffeeRecords: CoffeeRecord[] = [];
 
   // Define properties for form inputs
   date: string = new Date().toISOString().split('T')[0];
-  description: string = 'What coffee did have?'
+  description: string = defaultDescription
   ounces: number = 0;
   notes: string = 'Any notes?';
   rating: number = 0;
@@ -27,8 +29,7 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    //this.getRecords();
-    this.coffeeRecords = []; // Simulate an empty response for testing
+    this.getRecords();
   }
 
   getRecords() {
@@ -43,13 +44,13 @@ export class AppComponent implements OnInit {
   }
 
   addRecord() {
-    if (this.description === 'What coffee did you have?' ||
+    if (this.description === defaultDescription ||
       this.ounces === 0 ||
       this.rating === 0) {
       return;
     }
 
-    if (this.notes === 'Any notes?') {
+    if (this.notes === defaultNotes) {
       this.notes = '';
     }
 
@@ -73,9 +74,9 @@ export class AppComponent implements OnInit {
 
     // Reset form inputs
     this.date = new Date().toISOString().split('T')[0];
-    this.description = 'What coffee you did have?';
+    this.description = defaultDescription;
     this.ounces = 0;
-    this.notes = 'Any notes?';
+    this.notes = defaultNotes;
     this.rating = 0;
   }
 }
