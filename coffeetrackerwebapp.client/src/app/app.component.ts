@@ -17,15 +17,20 @@ const defaultNotes = 'Any notes?';
 
 export class AppComponent implements OnInit {
 
-  title = 'coffeetrackerwebapp.client';
   public coffeeRecords: CoffeeRecord[] = [];
+
   public date: Date | null = null;
   public description: string = defaultDescription;
   public ounces: number = 0;
   public notes: string = defaultNotes;
   public rating: number = 0;
+
   public showAddForm: boolean = true;
   public showEditForm: boolean = false;
+
+  public currentSortProperty: string = 'date';
+  public sortDescending: boolean = true;
+
   private editRecordId: number | null = null;
 
   constructor(private http: HttpClient) {
@@ -47,6 +52,7 @@ export class AppComponent implements OnInit {
       })
     ).subscribe((result) => {
       this.coffeeRecords = result;
+      this.applySort();
     });
   }
 
@@ -149,5 +155,42 @@ export class AppComponent implements OnInit {
     this.ounces = 0;
     this.notes = defaultNotes;
     this.rating = 0;
+  }
+
+  sortRecords(property: string) {
+    if (this.currentSortProperty === property) {
+      this.sortDescending = !this.sortDescending;
+    } else {
+      this.currentSortProperty = property;
+      this.sortDescending = true;
+    }
+
+    this.applySort();
+  }
+
+  applySort() {
+    const direction = this.sortDescending ? 1 : -1;
+    this.coffeeRecords.sort((a, b) => {
+      switch (this.currentSortProperty) {
+        case 'date':
+          return a.date === b.date ? 0 :
+            (direction * (a.date < b.date ? 1 : -1));
+        case 'description':
+          return a.description === b.description ? 0 :
+            (direction * (a.description < b.description ? 1 : -1));
+        case 'ounces':
+          return a.ounces === b.ounces ? 0 :
+            (direction * (a.ounces < b.ounces ? 1 : -1));
+        case 'notes':
+          return a.notes === b.notes ? 0 :
+            (direction * (a.notes < b.notes ? 1 : -1));
+        case 'rating':
+          return a.rating === b.rating ? 0 :
+            (direction * (a.rating < b.rating ? 1 : -1));
+        default:
+          console.error(`Invalid sort parameter ${this.currentSortProperty}`);
+          return 0;
+      }
+    });
   }
 }

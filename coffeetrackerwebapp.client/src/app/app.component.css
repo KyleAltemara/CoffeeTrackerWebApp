@@ -40,3 +40,10 @@ th {
     padding-bottom: 1rem;
     text-align: left;
 }
+
+.sortable {
+  cursor: pointer;
+}
+  .sortable:hover {
+    color: #ffcc00;
+  }
