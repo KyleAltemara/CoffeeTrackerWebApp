@@ -90,6 +90,11 @@ export class AppComponent implements OnInit {
   }
 
   deleteRecord(coffeeRecord: CoffeeRecord) {
+    const confirmed = confirm(`Are you sure you want to delete the record for ${coffeeRecord.description}?`);
+    if (!confirmed) {
+      return;
+    }
+
     this.http.delete(`${environment.apiUrl}/${coffeeRecord.id}`).pipe(
       catchError((error) => {
         console.error(error);
