@@ -19,13 +19,14 @@ export class AppComponent implements OnInit {
 
   title = 'coffeetrackerwebapp.client';
   public coffeeRecords: CoffeeRecord[] = [];
-
-  // Define properties for form inputs
-  date: string = new Date().toISOString().split('T')[0];
-  description: string = defaultDescription
-  ounces: number = 0;
-  notes: string = 'Any notes?';
-  rating: number = 0;
+  public date: Date | null = null;
+  public description: string = defaultDescription;
+  public ounces: number = 0;
+  public notes: string = defaultNotes;
+  public rating: number = 0;
+  public showAddForm: boolean = true;
+  public showEditForm: boolean = false;
+  private editRecordId: number | null = null;
 
   constructor(private http: HttpClient) {
     // Ensure HttpClient is injected correctly
@@ -50,7 +51,8 @@ export class AppComponent implements OnInit {
   }
 
   addRecord() {
-    if (this.description === defaultDescription ||
+    if (this.date === null ||
+      this.description === defaultDescription ||
       this.ounces === 0 ||
       this.rating === 0) {
       return;
@@ -62,7 +64,7 @@ export class AppComponent implements OnInit {
 
     const newRecord: CoffeeRecord = {
       id: 0,
-      date: this.date,
+      date: this.date!,
       description: this.description,
       ounces: this.ounces,
       notes: this.notes,
@@ -78,12 +80,7 @@ export class AppComponent implements OnInit {
       this.getRecords();
     });
 
-    // Reset form inputs
-    this.date = new Date().toISOString().split('T')[0];
-    this.description = defaultDescription;
-    this.ounces = 0;
-    this.notes = defaultNotes;
-    this.rating = 0;
+    this.resetFormInputs();
   }
 
   deleteRecord(coffeeRecord: CoffeeRecord) {
@@ -95,5 +92,62 @@ export class AppComponent implements OnInit {
     ).subscribe(() => {
       this.getRecords();
     });
-   }
+  }
+
+  setupEditForm(coffeeRecord: CoffeeRecord) {
+    this.date = coffeeRecord.date;
+    this.description = coffeeRecord.description;
+    this.ounces = coffeeRecord.ounces;
+    this.notes = coffeeRecord.notes;
+    this.rating = coffeeRecord.rating;
+    this.editRecordId = coffeeRecord.id;
+    this.showEditForm = true;
+    this.showAddForm = false;
+  }
+
+  editRecord() {
+    if (this.description === defaultDescription ||
+      this.ounces === 0 ||
+      this.rating === 0) {
+      return;
+    }
+
+    const updatedRecord: CoffeeRecord = {
+      id: this.editRecordId!,
+      date: this.date!,
+      description: this.description,
+      ounces: this.ounces,
+      notes: this.notes,
+      rating: this.rating
+    };
+
+    this.http.put(`${environment.apiUrl}/${updatedRecord.id}`, updatedRecord).pipe(
+      catchError((error) => {
+        console.error(error);
+        return of({});
+      })
+    ).subscribe(() => {
+      this.getRecords();
+    });
+
+    this.resetFormInputs();
+    this.showEditForm = false;
+    this.showAddForm = true;
+    this.editRecordId = null;
+  }
+
+  cancelEdit() {
+    this.resetFormInputs();
+    this.showEditForm = false;
+    this.showAddForm = true;
+    this.editRecordId = null;
+  }
+
+  resetFormInputs() {
+    this.date = null;
+    this.description = defaultDescription;
+    this.ounces = 0;
+    this.notes = defaultNotes;
+    this.rating = 0;
+  }
 }

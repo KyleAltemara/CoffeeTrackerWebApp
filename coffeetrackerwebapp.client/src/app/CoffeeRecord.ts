@@ -1,7 +1,7 @@
 export interface CoffeeRecord {
     id: number;
     description: string;
-    date: string;
+    date: Date;
     ounces: number;
     notes: string;
     rating: number;

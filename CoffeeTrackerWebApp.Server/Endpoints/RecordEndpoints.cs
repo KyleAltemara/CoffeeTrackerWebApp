@@ -34,7 +34,6 @@ public static class RecordEndpoints
             var affected = await db.CoffeeRecords
                 .Where(model => model.Id == id)
                 .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(m => m.Id, @record.Id)
                     .SetProperty(m => m.Description, @record.Description)
                     .SetProperty(m => m.Ounces, @record.Ounces)
                     .SetProperty(m => m.Notes, @record.Notes)
