@@ -1,32 +1,72 @@
 <h1 id="tableLabel">Coffee Tracker</h1>
 
-<form id="coffeeForm" (ngSubmit)="addRecord()" *ngIf="showAddForm">
+<form id="coffeeForm" (ngSubmit)="addRecord()" *ngIf="showAddForm" #coffeeForm="ngForm">
   <label for="date">Date:</label>
-  <input type="date" id="date" name="date" [(ngModel)]="date" required>
-  <label for="description">Description:</label>
-  <input type="text" id="description" name="description" [(ngModel)]="description" required>
-  <label for="ounces">Ounces:</label>
-  <input type="number" id="ounces" name="ounces" [(ngModel)]="ounces" required>
-  <label for="notes">Notes:</label>
-  <input type="text" id="notes" name="notes">
-  <label for="rating">Rating:</label>
-  <input type="number" id="rating" name="rating" [(ngModel)]="rating" required>
-  <button type="submit">Add Coffee Record</button>
-</form>
+  <input type="date" id="date" name="date" [(ngModel)]="date" required #dateCtrl="ngModel">
+  <div *ngIf="dateCtrl.invalid && (dateCtrl.dirty || dateCtrl.touched)">
+    <div *ngIf="dateCtrl.errors?.['required']">Date is required.</div>
+  </div>
 
-<form id="editCoffeForm" (ngSubmit)="editRecord()" *ngIf="showEditForm">
-  <label for="date">Date:</label>
-  <input type="date" id="date" name="date" [ngModel]="date | date:'yyyy-MM-dd'" (ngModelChange)="date = $event" required>
   <label for="description">Description:</label>
-  <input type="text" id="description" name="description" [(ngModel)]="description" required>
+  <input type="text" id="description" name="description" [(ngModel)]="description" required #descriptionCtrl="ngModel">
+  <div *ngIf="descriptionCtrl.invalid && (descriptionCtrl.dirty || descriptionCtrl.touched)">
+    <div *ngIf="descriptionCtrl.errors?.['required']">Description is required.</div>
+  </div>
+
   <label for="ounces">Ounces:</label>
-  <input type="number" id="ounces" name="ounces" [(ngModel)]="ounces" required>
+  <input type="number" id="ounces" name="ounces" [(ngModel)]="ounces" required min="1" #ouncesCtrl="ngModel">
+  <div *ngIf="ouncesCtrl.invalid && (ouncesCtrl.dirty || ouncesCtrl.touched)">
+    <div *ngIf="ouncesCtrl.errors?.['required']">Ounces is required.</div>
+    <div *ngIf="ouncesCtrl.errors?.['min']">Ounces must be at least 1.</div>
+  </div>
+
   <label for="notes">Notes:</label>
   <input type="text" id="notes" name="notes" [(ngModel)]="notes">
+
   <label for="rating">Rating:</label>
-  <input type="number" id="rating" name="rating" [(ngModel)]="rating" required>
+  <input type="number" id="rating" name="rating" [(ngModel)]="rating" required min="1" max="5" #ratingCtrl="ngModel">
+  <div *ngIf="ratingCtrl.invalid && (ratingCtrl.dirty || ratingCtrl.touched)">
+    <div *ngIf="ratingCtrl.errors?.['required']">Rating is required.</div>
+    <div *ngIf="ratingCtrl.errors?.['min']">Rating must be at least 1.</div>
+    <div *ngIf="ratingCtrl.errors?.['max']">Rating cannot be more than 5.</div>
+  </div>
+
+  <button type="submit" [disabled]="coffeeForm.invalid">Add Coffee Record</button>
+</form>
+
+<form id="editCoffeForm" (ngSubmit)="editRecord()" *ngIf="showEditForm" #editCoffeeForm="ngForm">
+  <label for="date">Date:</label>
+  <input type="date" id="date" name="date" [ngModel]="date | date:'yyyy-MM-dd'" (ngModelChange)="date = $event" required #editDateCtrl="ngModel">
+  <div *ngIf="editDateCtrl.invalid && (editDateCtrl.dirty || editDateCtrl.touched)">
+    <div *ngIf="editDateCtrl.errors?.['required']">Date is required.</div>
+  </div>
+
+  <label for="description">Description:</label>
+  <input type="text" id="description" name="description" [(ngModel)]="description" required #editDescriptionCtrl="ngModel">
+  <div *ngIf="editDescriptionCtrl.invalid && (editDescriptionCtrl.dirty || editDescriptionCtrl.touched)">
+    <div *ngIf="editDescriptionCtrl.errors?.['required']">Description is required.</div>
+  </div>
+
+  <label for="ounces">Ounces:</label>
+  <input type="number" id="ounces" name="ounces" [(ngModel)]="ounces" required min="1" #editOuncesCtrl="ngModel">
+  <div *ngIf="editOuncesCtrl.invalid && (editOuncesCtrl.dirty || editOuncesCtrl.touched)">
+    <div *ngIf="editOuncesCtrl.errors?.['required']">Ounces is required.</div>
+    <div *ngIf="editOuncesCtrl.errors?.['min']">Ounces must be at least 1.</div>
+  </div>
+
+  <label for="notes">Notes:</label>
+  <input type="text" id="notes" name="notes" [(ngModel)]="notes">
+
+  <label for="rating">Rating:</label>
+  <input type="number" id="rating" name="rating" [(ngModel)]="rating" required min="1" max="5" #editRatingCtrl="ngModel">
+  <div *ngIf="editRatingCtrl.invalid && (editRatingCtrl.dirty || editRatingCtrl.touched)">
+    <div *ngIf="editRatingCtrl.errors?.['required']">Rating is required.</div>
+    <div *ngIf="editRatingCtrl.errors?.['min']">Rating must be at least 1.</div>
+    <div *ngIf="editRatingCtrl.errors?.['max']">Rating cannot be more than 5.</div>
+  </div>
+
   <div class="button-container">
-    <button type="submit">Save Coffee Record</button>
+    <button type="submit" [disabled]="editCoffeeForm.invalid">Save Coffee Record</button>
     <button (click)="cancelEdit()">Cancel</button>
   </div>
 </form>
