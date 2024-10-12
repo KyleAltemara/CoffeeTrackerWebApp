@@ -8,7 +8,7 @@
   <label for="ounces">Ounces:</label>
   <input type="number" id="ounces" name="ounces" [(ngModel)]="ounces" required>
   <label for="notes">Notes:</label>
-  <input type="text" id="notes" name="notes" [(ngModel)]="notes">
+  <input type="text" id="notes" name="notes">
   <label for="rating">Rating:</label>
   <input type="number" id="rating" name="rating" [(ngModel)]="rating" required>
   <button type="submit">Add Coffee Record</button>
@@ -34,24 +34,100 @@
 <table *ngIf="coffeeRecords.length">
   <thead>
     <tr>
-      <th class="sortable" (click)="sortRecords('date')">Date <span *ngIf="currentSortProperty === 'date'">{{ sortDescending ? '▼' : '▲' }}</span></th>
-      <th class="sortable" (click)="sortRecords('description')">Description <span *ngIf="currentSortProperty === 'description'">{{ sortDescending ? '▼' : '▲' }}</span></th>
-      <th class="sortable" (click)="sortRecords('ounces')">Ounces <span *ngIf="currentSortProperty === 'ounces'">{{ sortDescending ? '▼' : '▲' }}</span></th>
-      <th class="sortable" (click)="sortRecords('notes')">Notes <span *ngIf="currentSortProperty === 'notes'">{{ sortDescending ? '▼' : '▲' }}</span></th>
-      <th class="sortable" (click)="sortRecords('rating')">Rating <span *ngIf="currentSortProperty === 'rating'">{{ sortDescending ? '▼' : '▲' }}</span></th>
+      <th class="sortable" (click)="sortRecords('date')">
+        Date
+        <span *ngIf="currentSortProperty === 'date'">{{ sortDescending ? '▼' : '▲' }}</span>
+        <button (click)="showDateFilter = !showDateFilter">
+          <img src="/filter.png" alt="Filter" class="icon">
+        </button>
+      </th>
+      <th class="sortable" (click)="sortRecords('description')">
+        Description
+        <span *ngIf="currentSortProperty === 'description'">{{ sortDescending ? '▼' : '▲' }}</span>
+        <button (click)="showDescriptionFilter = !showDescriptionFilter">
+          <img src="/filter.png" alt="Filter" class="icon">
+        </button>
+      </th>
+      <th class="sortable" (click)="sortRecords('ounces')">
+        Ounces
+        <span *ngIf="currentSortProperty === 'ounces'">{{ sortDescending ? '▼' : '▲' }}</span>
+        <button (click)="showOuncesFilter = !showOuncesFilter">
+          <img src="/filter.png" alt="Filter" class="icon">
+        </button>
+      </th>
+      <th class="sortable" (click)="sortRecords('notes')">
+        Notes
+        <span *ngIf="currentSortProperty === 'notes'">{{ sortDescending ? '▼' : '▲' }}</span>
+        <button (click)="showNotesFilter = !showNotesFilter">
+          <img src="/filter.png" alt="Filter" class="icon">
+        </button>
+      </th>
+      <th class="sortable" (click)="sortRecords('rating')">
+        Rating
+        <span *ngIf="currentSortProperty === 'rating'">{{ sortDescending ? '▼' : '▲' }}</span>
+        <button (click)="showRatingFilter = !showRatingFilter">
+          <img src="/filter.png" alt="Filter" class="icon">
+        </button>
+      </th>
       <th></th>
+    </tr>
+    <tr>
+      <th *ngIf="!showDateFilter"></th>
+      <th *ngIf="showDateFilter">
+        <input type="date" [(ngModel)]="filters.dateFrom" (ngModelChange)="applyFilters()" placeholder="From">
+        <input type="date" [(ngModel)]="filters.dateTo" (ngModelChange)="applyFilters()" placeholder="To">
+        <button (click)="clearFilter('dateFrom')">
+          <img src="/cancel.png" alt="Cancel" class="icon">
+        </button>
+      </th>
+      <th *ngIf="!showDescriptionFilter"></th>
+      <th *ngIf="showDescriptionFilter">
+        <input type="text" [(ngModel)]="filters.description" (ngModelChange)="applyFilters()">
+        <button (click)="clearFilter('description')">
+          <img src="/cancel.png" alt="Cancel" class="icon">
+        </button>
+      </th>
+      <th *ngIf="!showOuncesFilter"></th>
+      <th *ngIf="showOuncesFilter">
+        <input type="number" [(ngModel)]="filters.ouncesFrom" (ngModelChange)="applyFilters()" placeholder="Min">
+        <input type="number" [(ngModel)]="filters.ouncesTo" (ngModelChange)="applyFilters()" placeholder="Max">
+        <button (click)="clearFilter('ouncesFrom')">
+          <img src="/cancel.png" alt="Cancel" class="icon">
+        </button>
+      </th>
+      <th *ngIf="!showNotesFilter"></th>
+      <th *ngIf="showNotesFilter">
+        <input type="text" [(ngModel)]="filters.notes" (ngModelChange)="applyFilters()">
+        <button (click)="clearFilter('notes')">
+          <img src="/cancel.png" alt="Cancel" class="icon">
+        </button>
+      </th>
+      <th *ngIf="!showRatingFilter"></th>
+      <th *ngIf="showRatingFilter">
+        <select [(ngModel)]="filters.rating" (ngModelChange)="applyFilters()">
+          <option value="">All</option>
+          <option *ngFor="let rating of ratingOptions" [value]="rating">{{ rating }}+</option>
+        </select>
+        <button (click)="clearFilter('rating')">
+          <img src="/cancel.png" alt="Cancel" class="icon">
+        </button>
+      </th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let coffeeRecord of coffeeRecords">
+    <tr *ngFor="let coffeeRecord of filteredRecords">
       <td>{{ coffeeRecord.date | date }}</td>
       <td>{{ coffeeRecord.description }}</td>
       <td>{{ coffeeRecord.ounces }}</td>
       <td>{{ coffeeRecord.notes }}</td>
       <td>{{ coffeeRecord.rating }}</td>
       <td>
-        <button (click)="deleteRecord(coffeeRecord)">Delete</button>
-        <button (click)="setupEditForm(coffeeRecord)">Edit</button>
+        <button (click)="deleteRecord(coffeeRecord)">
+          <img src="/delete.png" alt="Delete" class="icon">
+        </button>
+        <button (click)="setupEditForm(coffeeRecord)">
+          <img src="/edit.png" alt="Edit" class="icon">
+        </button>
       </td>
     </tr>
   </tbody>

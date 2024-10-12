@@ -9,6 +9,16 @@ import { CoffeeRecord } from './CoffeeRecord.js';
 const defaultDescription = 'What coffee did you have?';
 const defaultNotes = 'Any notes?';
 
+interface Filters {
+  dateFrom: string;
+  dateTo: string;
+  description: string;
+  ouncesFrom: string;
+  ouncesTo: string;
+  notes: string;
+  rating: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,6 +28,7 @@ const defaultNotes = 'Any notes?';
 export class AppComponent implements OnInit {
 
   public coffeeRecords: CoffeeRecord[] = [];
+  public filteredRecords: CoffeeRecord[] = [];
 
   public date: Date | null = null;
   public description: string = defaultDescription;
@@ -30,6 +41,24 @@ export class AppComponent implements OnInit {
 
   public currentSortProperty: string = 'date';
   public sortDescending: boolean = true;
+
+  public showDateFilter = false;
+  public showDescriptionFilter = false;
+  public showOuncesFilter = false;
+  public showNotesFilter = false;
+  public showRatingFilter = false;
+
+  public filters: Filters = {
+    dateFrom: '',
+    dateTo: '',
+    description: '',
+    ouncesFrom: '',
+    ouncesTo: '',
+    notes: '',
+    rating: ''
+  };
+
+  public ratingOptions = [1, 2, 3, 4, 5];
 
   private editRecordId: number | null = null;
 
@@ -52,6 +81,7 @@ export class AppComponent implements OnInit {
       })
     ).subscribe((result) => {
       this.coffeeRecords = result;
+      this.applyFilters();
       this.applySort();
     });
   }
@@ -175,7 +205,7 @@ export class AppComponent implements OnInit {
 
   applySort() {
     const direction = this.sortDescending ? 1 : -1;
-    this.coffeeRecords.sort((a, b) => {
+    this.filteredRecords.sort((a, b) => {
       switch (this.currentSortProperty) {
         case 'date':
           return a.date === b.date ? 0 :
@@ -198,4 +228,56 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  applyFilters() {
+    this.filteredRecords = this.coffeeRecords.filter(record => {
+      const dateFrom = this.filters.dateFrom ? new Date(this.filters.dateFrom) : null;
+      const dateTo = this.filters.dateTo ? new Date(this.filters.dateTo) : null;
+      const ouncesFrom = this.filters.ouncesFrom ? +this.filters.ouncesFrom : null;
+      const ouncesTo = this.filters.ouncesTo ? +this.filters.ouncesTo : null;
+      const rating = this.filters.rating ? +this.filters.rating : null;
+
+      return (!dateFrom || new Date(record.date) >= dateFrom) &&
+        (!dateTo || new Date(record.date) <= dateTo) &&
+        (!this.filters.description || record.description.toLowerCase().includes(this.filters.description.toLowerCase())) &&
+        (!ouncesFrom || record.ounces >= ouncesFrom) &&
+        (!ouncesTo || record.ounces <= ouncesTo) &&
+        (!this.filters.notes || record.notes.toLowerCase().includes(this.filters.notes.toLowerCase())) &&
+        (!rating || record.rating >= rating);
+    });
+  }
+
+  clearFilter(filter: keyof Filters) {
+    switch (filter) {
+      case 'dateFrom':
+      case 'dateTo':
+        this.showDateFilter = false;
+        this.filters.dateFrom = '';
+        this.filters.dateTo = '';
+        break;
+      case 'description':
+        this.showDescriptionFilter = false;
+        this.filters.description = '';
+        break;
+      case 'ouncesFrom':
+      case 'ouncesTo':
+        this.showOuncesFilter = false;
+        this.filters.ouncesFrom = '';
+        this.filters.ouncesTo = '';
+        break;
+      case 'notes':
+        this.showNotesFilter = false;
+        this.filters.notes = '';
+        break;
+      case 'rating':
+        this.showRatingFilter = false;
+        this.filters.rating = '';
+        break;
+      default:
+        console.error(`Invalid filter parameter ${filter}`);
+    }
+
+    this.applyFilters();
+  }
+
 }
