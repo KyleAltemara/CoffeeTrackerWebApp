@@ -77,35 +77,35 @@
       <th class="sortable" (click)="sortRecords('date')">
         Date
         <span *ngIf="currentSortProperty === 'date'">{{ sortDescending ? '▼' : '▲' }}</span>
-        <button (click)="showDateFilter = !showDateFilter">
+        <button (click)="showDateFilter = !showDateFilter; $event.stopPropagation()">
           <img src="/filter.png" alt="Filter" class="icon">
         </button>
       </th>
       <th class="sortable" (click)="sortRecords('description')">
         Description
         <span *ngIf="currentSortProperty === 'description'">{{ sortDescending ? '▼' : '▲' }}</span>
-        <button (click)="showDescriptionFilter = !showDescriptionFilter">
+        <button (click)="showDescriptionFilter = !showDescriptionFilter; $event.stopPropagation()">
           <img src="/filter.png" alt="Filter" class="icon">
         </button>
       </th>
       <th class="sortable" (click)="sortRecords('ounces')">
         Ounces
         <span *ngIf="currentSortProperty === 'ounces'">{{ sortDescending ? '▼' : '▲' }}</span>
-        <button (click)="showOuncesFilter = !showOuncesFilter">
+        <button (click)="showOuncesFilter = !showOuncesFilter; $event.stopPropagation()">
           <img src="/filter.png" alt="Filter" class="icon">
         </button>
       </th>
       <th class="sortable" (click)="sortRecords('notes')">
         Notes
         <span *ngIf="currentSortProperty === 'notes'">{{ sortDescending ? '▼' : '▲' }}</span>
-        <button (click)="showNotesFilter = !showNotesFilter">
+        <button (click)="showNotesFilter = !showNotesFilter; $event.stopPropagation()">
           <img src="/filter.png" alt="Filter" class="icon">
         </button>
       </th>
       <th class="sortable" (click)="sortRecords('rating')">
         Rating
         <span *ngIf="currentSortProperty === 'rating'">{{ sortDescending ? '▼' : '▲' }}</span>
-        <button (click)="showRatingFilter = !showRatingFilter">
+        <button (click)="showRatingFilter = !showRatingFilter; $event.stopPropagation()">
           <img src="/filter.png" alt="Filter" class="icon">
         </button>
       </th>
@@ -114,37 +114,47 @@
     <tr>
       <th *ngIf="!showDateFilter"></th>
       <th *ngIf="showDateFilter">
-        <input type="date" [(ngModel)]="filters.dateFrom" (ngModelChange)="applyFilters()" placeholder="From">
-        <input type="date" [(ngModel)]="filters.dateTo" (ngModelChange)="applyFilters()" placeholder="To">
+        <label for="dateFrom">From:</label>
+        <input type="date" id="dateFrom" [(ngModel)]="filters.dateFrom" placeholder="From" (ngModelChange)="applyFilters()">
+        <label for="dateTo">To:</label>
+        <input type="date" id="dateTo" [(ngModel)]="filters.dateTo" placeholder="To" (ngModelChange)="applyFilters()">
         <button (click)="clearFilter('dateFrom')">
           <img src="/cancel.png" alt="Cancel" class="icon">
         </button>
+        <div *ngIf="filters.dateFrom && filters.dateTo && filters.dateFrom > filters.dateTo">
+          <div class="error">From cannot be later than To.</div>
+        </div>
       </th>
       <th *ngIf="!showDescriptionFilter"></th>
       <th *ngIf="showDescriptionFilter">
-        <input type="text" [(ngModel)]="filters.description" (ngModelChange)="applyFilters()">
+        <input type="text" [(ngModel)]="filters.description" (ngModelChange)="applyFilters()" #descriptionFilterCtrl="ngModel">
         <button (click)="clearFilter('description')">
           <img src="/cancel.png" alt="Cancel" class="icon">
         </button>
       </th>
       <th *ngIf="!showOuncesFilter"></th>
       <th *ngIf="showOuncesFilter">
-        <input type="number" [(ngModel)]="filters.ouncesFrom" (ngModelChange)="applyFilters()" placeholder="Min">
-        <input type="number" [(ngModel)]="filters.ouncesTo" (ngModelChange)="applyFilters()" placeholder="Max">
+        <label for="ouncesFrom">From:</label>
+        <input type="number" id="ouncesFrom" [(ngModel)]="filters.ouncesFrom" placeholder="From" (ngModelChange)="applyFilters()">
+        <label for="ouncesTo">To:</label>
+        <input type="number" id="ouncesTo" [(ngModel)]="filters.ouncesTo" placeholder="To" (ngModelChange)="applyFilters()">
+        <div *ngIf="filters.ouncesFrom > filters.ouncesTo">
+          <div class="error">From cannot be larger than To.</div>
+        </div>
         <button (click)="clearFilter('ouncesFrom')">
           <img src="/cancel.png" alt="Cancel" class="icon">
         </button>
       </th>
       <th *ngIf="!showNotesFilter"></th>
       <th *ngIf="showNotesFilter">
-        <input type="text" [(ngModel)]="filters.notes" (ngModelChange)="applyFilters()">
+        <input type="text" [(ngModel)]="filters.notes" (ngModelChange)="applyFilters()" #notesFilterCtrl="ngModel">
         <button (click)="clearFilter('notes')">
           <img src="/cancel.png" alt="Cancel" class="icon">
         </button>
       </th>
       <th *ngIf="!showRatingFilter"></th>
       <th *ngIf="showRatingFilter">
-        <select [(ngModel)]="filters.rating" (ngModelChange)="applyFilters()">
+        <select [(ngModel)]="filters.rating" (ngModelChange)="applyFilters()" #ratingFilterCtrl="ngModel">
           <option value="">All</option>
           <option *ngFor="let rating of ratingOptions" [value]="rating">{{ rating }}+</option>
         </select>

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -26,7 +27,6 @@ interface Filters {
 })
 
 export class AppComponent implements OnInit {
-
   public coffeeRecords: CoffeeRecord[] = [];
   public filteredRecords: CoffeeRecord[] = [];
 
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit {
     ouncesFrom: '',
     ouncesTo: '',
     notes: '',
-    rating: ''
+    rating: '',
   };
 
   public ratingOptions = [1, 2, 3, 4, 5];
@@ -63,7 +63,6 @@ export class AppComponent implements OnInit {
   private editRecordId: number | null = null;
 
   constructor(private http: HttpClient) {
-    // Ensure HttpClient is injected correctly
     if (!http) {
       throw new Error('HttpClient not provided');
     }
@@ -71,6 +70,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.getRecords();
+    this.applyFilters();
   }
 
   getRecords() {
@@ -82,7 +82,6 @@ export class AppComponent implements OnInit {
     ).subscribe((result) => {
       this.coffeeRecords = result;
       this.applyFilters();
-      this.applySort();
     });
   }
 
@@ -230,21 +229,35 @@ export class AppComponent implements OnInit {
   }
 
   applyFilters() {
-    this.filteredRecords = this.coffeeRecords.filter(record => {
-      const dateFrom = this.filters.dateFrom ? new Date(this.filters.dateFrom) : null;
-      const dateTo = this.filters.dateTo ? new Date(this.filters.dateTo) : null;
-      const ouncesFrom = this.filters.ouncesFrom ? +this.filters.ouncesFrom : null;
-      const ouncesTo = this.filters.ouncesTo ? +this.filters.ouncesTo : null;
-      const rating = this.filters.rating ? +this.filters.rating : null;
+    let dateFrom = this.filters.dateFrom ? new Date(this.filters.dateFrom + 'T00:00:00') : null;
+    let dateTo = this.filters.dateTo ? new Date(this.filters.dateTo + 'T23:59:59') : null;
+    let ouncesFrom = this.filters.ouncesFrom ? +this.filters.ouncesFrom : null;
+    let ouncesTo = this.filters.ouncesTo ? +this.filters.ouncesTo : null;
+    const rating = this.filters.rating ? +this.filters.rating : null;
 
-      return (!dateFrom || new Date(record.date) >= dateFrom) &&
-        (!dateTo || new Date(record.date) <= dateTo) &&
-        (!this.filters.description || record.description.toLowerCase().includes(this.filters.description.toLowerCase())) &&
-        (!ouncesFrom || record.ounces >= ouncesFrom) &&
-        (!ouncesTo || record.ounces <= ouncesTo) &&
-        (!this.filters.notes || record.notes.toLowerCase().includes(this.filters.notes.toLowerCase())) &&
-        (!rating || record.rating >= rating);
+    this.filteredRecords = this.coffeeRecords.filter(record => {
+      const recordDate = new Date(record.date);
+      const isDateFromValid = !dateFrom || recordDate >= dateFrom;
+      const isDateToValid = !dateTo || recordDate <= dateTo;
+      const isDescriptionValid = !this.filters.description ||
+        record.description.toLowerCase().includes(this.filters.description.toLowerCase());
+      const isOuncesFromValid = !ouncesFrom || record.ounces >= ouncesFrom;
+      const isOuncesToValid = !ouncesTo || record.ounces <= ouncesTo;
+      const isNotesValid = !this.filters.notes ||
+        record.notes.toLowerCase().includes(this.filters.notes.toLowerCase());
+      const isRatingValid = !rating || record.rating >= rating;
+
+      return isDateFromValid &&
+        isDateToValid &&
+        isDescriptionValid &&
+        isOuncesFromValid &&
+        isOuncesToValid &&
+        isNotesValid &&
+        isRatingValid;
+
     });
+
+    this.applySort();
   }
 
   clearFilter(filter: keyof Filters) {
@@ -279,5 +292,4 @@ export class AppComponent implements OnInit {
 
     this.applyFilters();
   }
-
 }

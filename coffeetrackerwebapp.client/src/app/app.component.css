@@ -98,3 +98,7 @@ form {
   height: 8px;
   background: transparent;
 }
+
+.error {
+  color: red;
+}
